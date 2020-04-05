@@ -1,0 +1,55 @@
+<!-- main, one file -->
+<html>
+ <head>
+ <title> Main page </title>
+</head>
+ <body>
+  <a href='?'><button> Update Page</button></a> 
+  <a href='?NextEffect'><button %bOFFen%> Next Effect </button></a>
+  <a href='?Active=ON'><button %bONen%> ON </button></a> 
+  <a href='?Active=OFF'><button %bOFFen%> OFF </button></a> 
+  <br><br>
+  <label for="effect">Select effect:</label>
+  <select id="effect" name="Effect" onchange="if (this.value) window.location.href=this.value">
+%OptionList%
+  </select>
+  <br><br>
+  
+  <form>
+    <fieldset style="width:200px">  <!-- style="width:30%" -->
+    <legend><b>Settings (<i>not done yet</i>):</b></legend>
+    
+	<label for="range">Brightness:</label> <br> <input type="range" id="brightness" name="brightness" min="1" max="255" value="%BriVal%"> 
+	<span id="showbrightness"></span>
+      <script>
+        var slider1 = document.getElementById("brightness");
+        var output1 = document.getElementById("showbrightness");
+        output1.innerHTML = slider1.value;
+        slider1.oninput = function() {output1.innerHTML = this.value;}
+	  </script>    
+    <br>
+	<label for="range">Speed:</label> <br> <input type="range" id="speed" name="speed" min="1" max="255" value="30"> 
+	<span id="showspeed"></span>
+      <script>
+        var slider2 = document.getElementById("speed");
+        var output2 = document.getElementById("showspeed");
+        output2.innerHTML = slider2.value;
+        slider2.oninput = function() {output2.innerHTML = this.value;}
+	  </script>    
+	  
+    <br><br>
+    <fieldset id="effectchange" style="width:120px">
+	<legend>Effects Changes</legend>
+	  <input type="radio" value="random" %EffChRand% name="effectchange"> <label for="random">Random</label><br>
+	  <input type="radio" value="sequential" %EffChSeq% name="effectchange"> <label for="sequential">Sequential</label><br>
+  	  <input type="radio" value="none" %EffChNone% name="effectchange"> <label for="none">No Change</label><br>
+      
+	  <label for="changeinterval">Every:</label> <input type="text" id="changeinterval" name="changeinterval" maxlength="3" size="1" value="%ChngeInterv%"> S
+    </fieldset>
+	<br><br>
+    <input type="submit" value="Submit">
+   </fieldset> 
+  </form>
+  <a href="/diag">Diag-Info</a> </br> 
+ </body>
+ </html>
