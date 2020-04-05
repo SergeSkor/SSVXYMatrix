@@ -19,13 +19,8 @@ SSVTimer Tmr_OnBoardLED;
 #include <ESP8266WebServer.h>   //WiFi object declared here. Also declared in <ESP8266WiFi.h>
 ESP8266WebServer webserver (80);
 //home
-const char *ssid = "Serge S. home (2.4GHz)";
-const char *password = "dell_latitude";
-
-//.33 router
-//const char* ssid     = "SLEWIFITEST9";
-//const char* password = "TESTENG109";
-
+const char *ssid = "YOUR_SSID";
+const char *password = "YOUR_PWD";
 
 #include "FS.h" //file system
 #include <ArduinoOTA.h>
