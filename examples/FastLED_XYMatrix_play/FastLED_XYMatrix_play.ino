@@ -18,7 +18,7 @@ SSVTimer Tmr_OnBoardLED;
 
 #include <ESP8266WebServer.h>   //WiFi object declared here. Also declared in <ESP8266WiFi.h>
 ESP8266WebServer webserver (80);
-//home
+
 const char *ssid = "YOUR_SSID";
 const char *password = "YOUR_PWD";
 
@@ -951,104 +951,6 @@ void TimerOFFFunc1()
 void StaticFramesDemo()
 {  
   //Demo started here
-
-FastLED.clear ();
-uint8_t a;
-uint8_t c= 81; //Q 81
-matrix.draw_fillrect(RectangleWH(Point(0,0), 15,15), CRGB::DarkBlue); //background
-//matrix.draw_2DGradient(CRGB::White, CRGB::Red, CRGB::Green, CRGB::Blue ); //background
-
-
-//matrix.drawLetter(c, -2, -2, CRGB::Yellow);
-//matrix.drawLetter(c, 12, 12, CRGB::Red);
-String S = String("ABCabc123  ");
-matrixText.setString(&S);
-matrixText.drawString(0,4, CRGB::Red);
-Serial.printf("minOffsetX_JustHide: %d\n", matrixText.minOffsetX_JustHide());
-Serial.printf("maxOffsetX_JustHide: %d\n", matrixText.maxOffsetX_JustHide());
-Serial.printf("minOffsetY_JustHide: %d\n", matrixText.minOffsetY_JustHide());
-Serial.printf("maxOffsetY_JustHide: %d\n", matrixText.maxOffsetY_JustHide());
-Serial.println();
-Serial.printf("minOffsetX_MaxVisibility: %d\n", matrixText.minOffsetX_MaxVisibility());
-Serial.printf("maxOffsetX_MaxVisibility: %d\n", matrixText.maxOffsetX_MaxVisibility());
-Serial.printf("minOffsetY_MaxVisibility: %d\n", matrixText.minOffsetY_MaxVisibility());
-Serial.printf("maxOffsetY_MaxVisibility: %d\n", matrixText.maxOffsetY_MaxVisibility());
-FastLED.show();
-delay(1000);
-FastLED.clear();
-
-
-int16_t i=0;
-for (byte n=0; n<2; n++)
-{
-CRGB c=CHSV(random8(), 255, 255);
-S = String(random(999999));
-matrixText.setString(&S);
-while (i >= matrixText.minOffsetX_JustHide())
-  {
-  FastLED.clear ();
-  matrixText.drawString(&S, i, 4, c);
-  delay(30);
-  FastLED.show();
-  i--;
-  }
-c=CHSV(random8(), 255, 255);  
-S = String(random(999999));
-while (i <= matrixText.maxOffsetX_JustHide())
-  {
-  FastLED.clear ();
-  matrixText.drawString(&S, i, 4, c);
-  delay(30);
-  FastLED.show();
-  i++;
-  }
-  Serial.println(ESP.getFreeHeap());
-}
-
-
-for (byte n=0; n<2; n++)
-{
-CRGB c=CHSV(random8(), 255, 255);
-S = String(random(99));
-while (i >= matrixText.minOffsetY_JustHide())
-  {
-  FastLED.clear ();
-  matrixText.drawString(&S, 0, i, c);
-  delay(50);
-  FastLED.show();
-  i--;
-  }
- c=CHSV(random8(), 255, 255);  
- S = String(random(99));
-while (i <= matrixText.maxOffsetY_JustHide())
-  {
-  FastLED.clear ();
-  matrixText.drawString(&S, 0, i, c);
-  delay(50);
-  FastLED.show();
-  i++;
-  }
-  Serial.println(ESP.getFreeHeap());
-}
-
-
-/*
-for (int16_t i=30; i>-100; i--) 
-{
-  //matrix.draw_fillrect(RectangleWH(Point(0,0), 15,15), CRGB::DarkBlue); //background
-  matrixText.drawCString("123ABCabc+-", i,4, CRGB::Red);
-  //Serial.println(i);
-  FastLED.show();
-  delay(50);
-}*/
-
-FastLED.show();
-delay(10000);
-
-
-return;
-
-
 
   //gradient lines
 FastLED.clear ();
