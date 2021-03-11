@@ -41,11 +41,15 @@ RectangleWH RectangleToRectangleWH(Rectangle R);
 Rectangle RectangleWHToRectangle(RectangleWH R);
 
 //XYMatrix Class
+  /*
+  History
+  1) 5/17/2020: added protection to handle out of matrix bounds in basic XYMatrix.draw_2DGradient(...) method.
+  */
 class XYMatrix
 {
   public:
     //constructors
-    XYMatrix(CRGB* aLeds, uint8_t MatrixWidth, uint8_t MatrixHeight, bool MatrixZigzagLayout);
+    XYMatrix(CRGB* aLeds, uint8_t MatrixWidth, uint8_t MatrixHeight, bool MatrixZigzagLayout=true/*, bool XYSwap=false, bool HSwap=false, bool VSwap=false*/);
     //
     void setPixelColor(uint8_t x, uint8_t y, CRGB color);
     void setPixelColor(Point P, CRGB color);
@@ -56,7 +60,16 @@ class XYMatrix
     uint8_t getMatrixWidth();
     uint8_t getMatrixHeight();
     bool isZigzagLayout();
-    //
+	void setZigzagLayout(bool ZigzagLayout);
+	
+	//bool isHSwap(); 
+	//void setHSwap(bool HSwap);
+    //bool isVSwap(); 
+    //void setVSwap(bool VSwap);
+    //bool isXYSwap(); 
+    //void setXYSwap(bool XYSwap);
+	
+	//
     void draw_line(int x1, int y1, int x2, int y2, CRGB color, boolean includeLastPoint=true);
     void draw_line(Point P1, Point P2, CRGB color, boolean includeLastPoint=true);
     //gradient line, different name to not confuse with default parameter "includeLastPoint"
@@ -108,6 +121,7 @@ class XYMatrix
     //void Shift_RectLeftRound(Point P1, Point P2 );  //other types of params?
     //shifts left, single color
     void Shift_RectLeft(RectangleWH Rect, CRGB ColorIn);
+    void Shift_RectLeft(CRGB ColorIn);
 
     //shifts right
     CRGB ShiftHorLineRight(int16_t X0, int16_t X1, int16_t Y, CRGB colorIN); //helper function, X0<=X1, returns colorOUT (not used for now)
@@ -116,6 +130,7 @@ class XYMatrix
     void Shift_RectRightRound(RectangleWH Rect);
     //shifts right, single color
     void Shift_RectRight(RectangleWH Rect, CRGB ColorIn);
+    void Shift_RectRight(CRGB ColorIn);
 
     //shifts up
     CRGB ShiftVertLineUp(int16_t X, int16_t Y0, int16_t Y1, CRGB colorIN); //helper function, Y0<=Y1, returns colorOUT (not used for now)
@@ -124,6 +139,7 @@ class XYMatrix
     void Shift_RectUpRound(RectangleWH Rect);
     //shifts up, single color
     void Shift_RectUp(RectangleWH Rect, CRGB ColorIn);
+    void Shift_RectUp(CRGB ColorIn);
 
     //shifts down
     CRGB ShiftVertLineDown(int16_t X, int16_t Y0, int16_t Y1, CRGB colorIN); //helper function, Y0<=Y1, returns colorOUT (not used for now)
@@ -132,6 +148,7 @@ class XYMatrix
     void Shift_RectDownRound(RectangleWH Rect);
     //shifts down, single color
     void Shift_RectDown(RectangleWH Rect, CRGB ColorIn);
+    void Shift_RectDown(CRGB ColorIn);
 
     //shifts round with direction
     void Shift_RectRoundDir(RectangleWH Rect, uint8_t Direction); //0:Up, 1:UpRight, 2:Right, 3:DownRight, 4:Down, 5:DownLeft, 6:Left, 7:UpLeft
@@ -158,6 +175,11 @@ class XYMatrix
     uint8_t _MatrixWidth;
     uint8_t _MatrixHeight;
     bool _MatrixZigzagLayout;
+
+    //bool _HSwap; 
+    //bool _VSwap; 
+	//bool _XYSwap;
+	
     uint16_t XY(uint8_t x, uint8_t y);     //convert x,y to index. Does not care about out of bounds
     uint16_t XY( Point P);
     //void circle(int x0, int y0, int radius, CRGB color, boolean fill); //helper function

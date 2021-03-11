@@ -32,19 +32,31 @@ Rectangle RectangleWHToRectangle(RectangleWH R)
 
 
 //XYMatrix Class
-XYMatrix::XYMatrix(CRGB* aLeds, uint8_t MatrixWidth, uint8_t MatrixHeight, bool MatrixZigzagLayout)
+  /*
+  History
+  1) 5/17/2020: added protection to handle out of matrix bounds in basic XYMatrix.draw_2DGradient(...) method.
+  */
+XYMatrix::XYMatrix(CRGB* aLeds, uint8_t MatrixWidth, uint8_t MatrixHeight, bool MatrixZigzagLayout/*, bool XYSwap, bool HSwap, bool VSwap*/)
 {
   _leds=aLeds;
   _MatrixWidth = MatrixWidth;
   _MatrixHeight = MatrixHeight;
   _MatrixZigzagLayout = MatrixZigzagLayout;
+  //_HSwap=HSwap;
+  //_VSwap=VSwap;
+  //_XYSwap=XYSwap;
 }
 
 //convert x,y to index. Does not care about out of bounds
 uint16_t XYMatrix::XY( uint8_t x, uint8_t y) 
 {
   uint16_t index;
-  if( _MatrixZigzagLayout) 
+
+  //if (_XYSwap) {uint8_t tmp=x; x=y; y=tmp;}  //ERROR: _MatrixZigzagLayout is on X axiz now, not Y!
+  //if (_HSwap) {x=_MatrixWidth-x-1;}
+  //if (_VSwap) {y=_MatrixHeight-y-1;}
+  
+  if(_MatrixZigzagLayout) 
     {
     //zigzag
     if( y & 0x01) 
@@ -109,6 +121,15 @@ uint8_t XYMatrix::getMatrixHeight()
 bool XYMatrix::isZigzagLayout()
 {return _MatrixZigzagLayout;}
 
+void XYMatrix::setZigzagLayout(bool ZigzagLayout)
+{_MatrixZigzagLayout=ZigzagLayout;}
+
+//bool XYMatrix::isHSwap() {return _HSwap;}
+//void XYMatrix::setHSwap(bool HSwap) {_HSwap=HSwap;}
+//bool XYMatrix::isVSwap() {return _VSwap;}
+//void XYMatrix::setVSwap(bool VSwap) {_VSwap=VSwap;}
+//bool XYMatrix::isXYSwap() {return _XYSwap;}
+//void XYMatrix::setXYSwap(bool XYSwap) {_XYSwap=XYSwap;}
 
 void XYMatrix::draw_line(int x1, int y1, int x2, int y2, CRGB color, boolean includeLastPoint)
 {
@@ -280,6 +301,12 @@ void XYMatrix::draw_rect(Rectangle Rect, CRGB color)
 
 void XYMatrix::draw_fillrect(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, CRGB color)
 {
+  //borders check, add 6/19/202
+  if (x0>= _MatrixWidth) x0=_MatrixWidth-1;
+  if (x1>= _MatrixWidth) x1=_MatrixWidth-1;
+  if (y0>= _MatrixHeight) y0=_MatrixHeight-1;
+  if (y0>= _MatrixHeight) y0=_MatrixHeight-1;
+	
   for( uint8_t yi = min(y0,y1); yi <= max(y0,y1); yi++)
   {
   draw_line(x0,yi, x1,yi, color);
@@ -486,6 +513,12 @@ void XYMatrix::draw_2DRainbow(byte OriginHue, Point origin, int8_t XDeltaHue, in
 
 void XYMatrix::draw_2DGradient(RectangleWH Rect, CRGB LeftBottomColor, CRGB LeftTopColor, CRGB RightBottomColor, CRGB RightTopColor)
 {
+  //added 5/17/2020 protection to handle out of matrix bounds
+  if (Rect.LeftBottom.X >= _MatrixWidth)  return;
+  if (Rect.LeftBottom.Y >= _MatrixHeight) return;
+  if ((Rect.LeftBottom.X+Rect.Width) >= _MatrixWidth)   {Rect.Width  = (_MatrixWidth  - Rect.LeftBottom.X-1);}
+  if ((Rect.LeftBottom.Y+Rect.Height) >= _MatrixHeight) {Rect.Height = (_MatrixHeight - Rect.LeftBottom.Y-1);}
+  //
   RGBGradientCalculator LeftGradient  (LeftBottomColor,  LeftTopColor,  Rect.LeftBottom.Y, Rect.LeftBottom.Y+Rect.Height);
   RGBGradientCalculator RightGradient (RightBottomColor, RightTopColor, Rect.LeftBottom.Y, Rect.LeftBottom.Y+Rect.Height);
   for( byte y = Rect.LeftBottom.Y; y < Rect.LeftBottom.Y+Rect.Height+1; y++) //number of dots is (Height+1)
@@ -575,7 +608,12 @@ void XYMatrix::Shift_RectLeft(RectangleWH Rect, CRGB ColorIn)
   {
     ShiftHorLineLeft(Rect.LeftBottom.X, Rect.LeftBottom.X+Rect.Width, y, ColorIn);
   }
+}
 
+void XYMatrix::Shift_RectLeft(CRGB ColorIn)
+{
+struct RectangleWH RWH = {Point(0,0), _MatrixWidth-1, _MatrixHeight-1};
+Shift_RectLeft(RWH, ColorIn);
 }
 
 //shift right
@@ -622,7 +660,12 @@ void XYMatrix::Shift_RectRight(RectangleWH Rect, CRGB ColorIn)
   {
     ShiftHorLineRight(Rect.LeftBottom.X, Rect.LeftBottom.X+Rect.Width, y, ColorIn);
   }
+}
 
+void XYMatrix::Shift_RectRight(CRGB ColorIn)
+{
+struct RectangleWH RWH = {Point(0,0), _MatrixWidth-1, _MatrixHeight-1};
+Shift_RectRight(RWH, ColorIn);
 }
 
 //shifts up
@@ -671,6 +714,12 @@ void XYMatrix::Shift_RectUp(RectangleWH Rect, CRGB ColorIn)
   }
 }
 
+void XYMatrix::Shift_RectUp(CRGB ColorIn)
+{  
+struct RectangleWH RWH = {Point(0,0), _MatrixWidth-1, _MatrixHeight-1};
+Shift_RectUp(RWH, ColorIn);
+}
+
 //shifts down
 CRGB XYMatrix::ShiftVertLineDown(int16_t X, int16_t Y0, int16_t Y1, CRGB colorIN) //helper function, Y0<=Y1, returns colorOUT (not used for now)
 {
@@ -715,7 +764,12 @@ void XYMatrix::Shift_RectDown(RectangleWH Rect, CRGB ColorIn)
   {
     ShiftVertLineDown(x, Rect.LeftBottom.Y, Rect.LeftBottom.Y+Rect.Height, ColorIn);
   }
+}
 
+void XYMatrix::Shift_RectDown(CRGB ColorIn)
+{
+struct RectangleWH RWH = {Point(0,0), _MatrixWidth-1, _MatrixHeight-1};
+Shift_RectDown(RWH, ColorIn);
 }
 
 //shifts round with direction
